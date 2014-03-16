@@ -180,7 +180,9 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			newPeerNeighbor.add(this.peerNode);
 			//Swap hash tables
 			HashMap<String,String> newPeerKeywords=swapHashTables(newPeer);
-			remoteFinalInsertUpdate(newPeer,newPeerKeywords,newPeerNeighbor);
+			Registry peerRegistry = LocateRegistry.getRegistry(newPeer.IPAddress, 5000);
+			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
+			peerRemoteObject.remoteFinalInsertUpdate(newPeer,newPeerKeywords,newPeerNeighbor);
 			
 		}else{
 			//redirecting
@@ -211,6 +213,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	public void remoteFinalInsertUpdate(Node newPeer,HashMap<String,String> keywords,ArrayList<Node> neighbours) 
 														throws RemoteException, NotBoundException
 	{
+		System.out.println("remote Final Insert Update");
 		this.peerNode=newPeer;
 		this.keywords=keywords;
 		this.neighbours=neighbours;
