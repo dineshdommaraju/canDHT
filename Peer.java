@@ -323,13 +323,15 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		remoteInterface otherObj = (remoteInterface) registry.lookup("server");
 		System.out.println("test Join 1");
 		String result = otherObj.getBootStrapNode(InetAddress.getLocalHost().getHostAddress());
+		
 		if(result.equals("FirstNode"))
 		{
 			this.peerNode=new Node(0,0,10,10,InetAddress.getLocalHost().getHostAddress());
 		}else{
+			System.out.println("result : "+result);
 			Registry peerRegistry = LocateRegistry.getRegistry(result, port);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
-			peerRemoteObject.insert(x,y,IPAddress);
+			peerRemoteObject.insert(x,y,InetAddress.getLocalHost().getHostAddress());
 			
 		}
 			
