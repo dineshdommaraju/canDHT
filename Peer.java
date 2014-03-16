@@ -1,4 +1,6 @@
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -41,6 +43,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	boolean sameZone(float xCoordinate, float yCoordinate, Node peer)
 	{
+		System.out.println("In same zone");
 		if (xCoordinate > peer.lx && yCoordinate > peer.ly
 				&& xCoordinate < peer.ux
 				&& yCoordinate < peer.uy) 
@@ -126,6 +129,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	HashMap<String,String> swapHashTables(Node newPeer)
 	{
+		System.out.println("Swapping hash tables");
 		HashMap<String,String> newPeerKeywords=new HashMap<String,String>();
 		//Iterator for the Existing keywords HashMap
 		Iterator it = keywords.entrySet().iterator();
@@ -142,11 +146,13 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	public void insert(float xCoordinate, float yCoordinate, String IPAddress) throws RemoteException, NotBoundException
 	{
+		System.out.println("Insert 1");
 		Node newPeer;
 		if(sameZone(xCoordinate,xCoordinate,this.peerNode))
 		{
 			if(divideHorizantally())
 			{
+				System.out.println("Divided horizontally");
 				if(yCoordinate <= (this.peerNode.uy/2))
 				{
 					newPeer=new Node(this.peerNode.lx,this.peerNode.ly,this.peerNode.ux,this.peerNode.uy/2,IPAddress);
@@ -156,6 +162,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 					this.peerNode.uy=this.peerNode.uy/2;
 				}
 			}else{
+				System.out.println("Divided vertically");
 				if(xCoordinate <= (this.peerNode.ux/2))
 				{
 					newPeer=new Node(this.peerNode.lx,this.peerNode.ly,this.peerNode.ux/2,this.peerNode.uy,IPAddress);
@@ -169,6 +176,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			//Updating the Neighbors
 			ArrayList<Node> newPeerNeighbor=updatePeersNeighbors(newPeer);
 			this.neighbours.add(newPeer);
+			System.out.println("Added new peer");
 			newPeerNeighbor.add(this.peerNode);
 			//Swap hash tables
 			HashMap<String,String> newPeerKeywords=swapHashTables(newPeer);
@@ -304,16 +312,17 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			canExtend(this.peerNode,this.neighbours.get(i));
 		}
 	}
-	void Join(String IPAddress, int port, float x, float y) throws RemoteException, NotBoundException
+	void Join(String IPAddress, int port, float x, float y) throws RemoteException, NotBoundException, UnknownHostException
 	{
 		Registry registry = LocateRegistry.getRegistry(IPAddress, port);
 		remoteInterface otherObj = (remoteInterface) registry.lookup("server");
-		String result = otherObj.getBootStrapNode("192.168.2.11");
+		System.out.println("test Join 1");
+		String result = otherObj.getBootStrapNode(InetAddress.getLocalHost().getHostAddress());
 		if(result.equals("FirstNode"))
 		{
 			this.peerNode=new Node(0,0,10,10,IPAddress);
 		}else{
-			Registry peerRegistry = LocateRegistry.getRegistry(IPAddress, port);
+			Registry peerRegistry = LocateRegistry.getRegistry(result, port);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 			peerRemoteObject.insert(x,y,IPAddress);
 			
@@ -337,14 +346,13 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 	}
 	
-	void userPrompt() throws RemoteException, NotBoundException
+	void userPrompt() throws RemoteException, NotBoundException, UnknownHostException
 	{
-		Scanner sc = new Scanner(System.in);
 		while(true)
 		{
+			Scanner sc = new Scanner(System.in);
 			String input = sc.next();
 			if (input.equals("join")) {
-				System.out.println(" Enter the Coordinates");
 				float x=sc.nextFloat();
 				float y=sc.nextFloat();
 				Join("129.21.135.188", 5000,x,y);
@@ -363,7 +371,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 	}
 	
-	public static void main(String[] args) throws RemoteException, NotBoundException {
+	public static void main(String[] args) throws RemoteException, NotBoundException, UnknownHostException {
 		Peer pr=new Peer();
 		pr.userPrompt();
 		
