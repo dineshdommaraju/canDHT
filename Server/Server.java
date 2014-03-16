@@ -1,4 +1,4 @@
-package Server;
+//package Server;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
