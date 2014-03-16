@@ -180,6 +180,8 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			newPeerNeighbor.add(this.peerNode);
 			//Swap hash tables
 			HashMap<String,String> newPeerKeywords=swapHashTables(newPeer);
+			
+			System.out.println(" "+newPeer.IPAddress);
 			Registry peerRegistry = LocateRegistry.getRegistry(newPeer.IPAddress, 5000);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 			peerRemoteObject.remoteFinalInsertUpdate(newPeer,newPeerKeywords,newPeerNeighbor);
@@ -323,7 +325,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		String result = otherObj.getBootStrapNode(InetAddress.getLocalHost().getHostAddress());
 		if(result.equals("FirstNode"))
 		{
-			this.peerNode=new Node(0,0,10,10,IPAddress);
+			this.peerNode=new Node(0,0,10,10,InetAddress.getLocalHost().getHostAddress());
 		}else{
 			Registry peerRegistry = LocateRegistry.getRegistry(result, port);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
