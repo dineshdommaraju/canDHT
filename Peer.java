@@ -57,27 +57,31 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	{
 		if(Math.abs(peerNode.lx-peerNode.ux)-Math.abs(peerNode.ly-peerNode.uy) >=0)
 		{
-			return true;
-		}else{
 			return false;
+		}else{
+			return true;
 		}
 	}
 	
 	boolean isNeighbor(Node newPeer, Node neighbor)
 	{
+		
 		float breadth=Math.abs(neighbor.ly-neighbor.uy)+Math.abs(newPeer.ly-newPeer.uy);
 		float length=Math.abs(neighbor.lx-neighbor.ux)+Math.abs(newPeer.lx-newPeer.ux);
+		System.out.println("breadth :"+breadth);
+		System.out.println("length :"+length);
 		
-		if(Math.abs(newPeer.ly-neighbor.lx) >=breadth || Math.abs(newPeer.ly-neighbor.lx) >=breadth)
+		if(Math.abs(newPeer.ly-neighbor.uy) >breadth || Math.abs(newPeer.uy-neighbor.ly) >breadth)
 			return false;
-		if(Math.abs(newPeer.ly-neighbor.lx) >=length || Math.abs(newPeer.ly-neighbor.lx) >=length)
+		if(Math.abs(newPeer.lx-neighbor.ux) >length || Math.abs(newPeer.ux-neighbor.lx) >length)
 			return false;
-		
+		System.out.println("test isNeighbor");
 		return true;
 	}
 	
 	public void remoteUpdateNeighbor(Node peer,String Action) throws RemoteException, NotBoundException
 	{
+		System.out.println("remoteUpdateNeighbor 1 ");
 		if(Action.equals("Add"))
 		{
 			this.neighbours.add(peer);
@@ -96,19 +100,28 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	ArrayList<Node> updatePeersNeighbors(Node newPeer) throws RemoteException, NotBoundException
 	{
+		System.out.println("updatePeersNeighbors 1");
 		ArrayList<Node> newPeerNeighbor=new ArrayList<Node>();
+		
 		for(int i=0;i<this.neighbours.size();i++)
 		{
+			Registry peerRegistry = LocateRegistry.getRegistry(this.neighbours.get(i).IPAddress, 5000);
+			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 			if(isNeighbor(newPeer,this.neighbours.get(i)))
 			{
-				remoteUpdateNeighbor(newPeer,"Add");
+				System.out.println("Add");
+				peerRemoteObject.remoteUpdateNeighbor(newPeer,"Add");
 				newPeerNeighbor.add(this.neighbours.get(i));	
 			}
 			
 			if(isNeighbor(this.peerNode, this.neighbours.get(i)))
-				remoteUpdateNeighbor(this.peerNode,"Update");
+			{
+				System.out.println("Update");
+				peerRemoteObject.remoteUpdateNeighbor(this.peerNode,"Update");
+				
+			}
 			else
-				remoteUpdateNeighbor(this.peerNode,"Delete");
+				peerRemoteObject.remoteUpdateNeighbor(this.peerNode,"Delete");
 		}
 		return newPeerNeighbor;	
 	}
