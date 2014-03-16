@@ -158,7 +158,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 					newPeer=new Node(this.peerNode.lx,this.peerNode.ly,this.peerNode.ux,this.peerNode.uy/2,IPAddress);
 					this.peerNode.ly=this.peerNode.uy/2;
 				}else{
-					newPeer=new Node(this.peerNode.lx,this.peerNode.uy/2,this.peerNode.ux,this.peerNode.uy/2,IPAddress);
+					newPeer=new Node(this.peerNode.lx,this.peerNode.uy/2,this.peerNode.ux,this.peerNode.uy,IPAddress);
 					this.peerNode.uy=this.peerNode.uy/2;
 				}
 			}else{
@@ -168,7 +168,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 					newPeer=new Node(this.peerNode.lx,this.peerNode.ly,this.peerNode.ux/2,this.peerNode.uy,IPAddress);
 					this.peerNode.lx=this.peerNode.ux/2;
 				}else{
-					newPeer=new Node(this.peerNode.ux/2,this.peerNode.ly,this.peerNode.ux,this.peerNode.uy/2,IPAddress);
+					newPeer=new Node(this.peerNode.ux/2,this.peerNode.ly,this.peerNode.ux,this.peerNode.uy,IPAddress);
 					this.peerNode.ux=this.peerNode.ux/2;
 				}
 				
