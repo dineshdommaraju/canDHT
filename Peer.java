@@ -482,7 +482,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			System.out.println("removeFromNeighbors");
 			Registry peerRegistry = LocateRegistry.getRegistry(this.neighbours.get(i).IPAddress, 6000);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
-			peerRemoteObject.remoteRemoveFromNeighbors(this.peerNode.IPAddress)
+			peerRemoteObject.remoteRemoveFromNeighbors(this.peerNode.IPAddress);
 			
 		}
 	}
