@@ -81,7 +81,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	public void remoteUpdateNeighbor(Node peer,String Action) throws RemoteException, NotBoundException
 	{
 		System.out.println("remoteUpdateNeighbor 1 ");
-
+	
 		if(Action.equals("Add"))
 		{
 			this.neighbours.add(peer);
@@ -103,6 +103,8 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			else
 				this.neighbours.remove(i);
 		}
+		if(Action.equals("Delete"))
+			this.neighbours.remove(i);
 		if(Action.equals("Update"))
 			this.neighbours.remove(i);
 		if(peer.lx!=peer.ux && peer.ly!=peer.uy)
@@ -141,7 +143,6 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			{
 				System.out.println("Update");
 				peerRemoteObject.remoteUpdateNeighbor(this.peerNode,"Update");
-				
 			}
 			else
 				peerRemoteObject.remoteUpdateNeighbor(this.peerNode,"Delete");
