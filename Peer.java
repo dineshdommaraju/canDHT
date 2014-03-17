@@ -44,9 +44,9 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	boolean sameZone(float xCoordinate, float yCoordinate, Node peer)
 	{
 		System.out.println("In same zone");
-		if (xCoordinate > peer.lx && yCoordinate > peer.ly
-				&& xCoordinate < peer.ux
-				&& yCoordinate < peer.uy) 
+		if (xCoordinate >= peer.lx && yCoordinate >= peer.ly
+				&& xCoordinate <= peer.ux
+				&& yCoordinate <= peer.uy) 
 			return true;
 		else 
 			return false;
