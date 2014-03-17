@@ -154,7 +154,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 					if(!newPeer.IPAddress.equals(this.neighbours.get(i).IPAddress))
 					{
 						System.out.println("leaveUpdate 1");
-						peerRemoteObject.remoteUpdateNeighbor(newPeer,"leaveUpdate");
+						peerRemoteObject.remoteUpdateNeighbor(newPeer,"LeaveUpdate");
 						newPeerNeighbor.add(this.neighbours.get(i));
 						
 					}
