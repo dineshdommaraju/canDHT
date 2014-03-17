@@ -43,7 +43,6 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	boolean sameZone(float xCoordinate, float yCoordinate, Node peer)
 	{
-		System.out.println("In same zone");
 		if (xCoordinate >= peer.lx && yCoordinate >= peer.ly
 				&& xCoordinate <= peer.ux
 				&& yCoordinate <= peer.uy) 
@@ -240,15 +239,19 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	}
 	public ArrayList<String> search(String keyword, float xCoordinate, float yCoordinate,String Action,ArrayList<String> path) throws RemoteException, NotBoundException
 	{
+		
 		System.out.println("xCoordinate : "+xCoordinate);
 		System.out.println("yCoordinate :"+yCoordinate);
 		path.add(this.peerNode.IPAddress);
 		if(sameZone(xCoordinate,yCoordinate,this.peerNode))
 		{
+			System.out.println("In same zone");
 			if(Action.equals("Insert"))
 			{
 				this.keywords.put(keyword, " ");
 			}else{
+				System.out.println(" Key :"+keyword);
+				System.out.println(this.keywords.size());
 				if(this.keywords.containsKey(keyword))
 					System.out.println("Keyword Found at" + this.peerNode.IPAddress);
 				else
