@@ -64,7 +64,8 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	boolean isNeighbor(Node newPeer, Node neighbor)
 	{
-		
+		if(newPeer.lx==newPeer.ux || newPeer.ly==newPeer.uy)
+			return false;
 		float breadth=Math.abs(neighbor.ly-neighbor.uy)+Math.abs(newPeer.ly-newPeer.uy);
 		float length=Math.abs(neighbor.lx-neighbor.ux)+Math.abs(newPeer.lx-newPeer.ux);
 		System.out.println("breadth :"+breadth);
