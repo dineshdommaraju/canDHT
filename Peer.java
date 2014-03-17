@@ -105,7 +105,10 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				this.neighbours.remove(i);
 		}
 		if(Action.equals("Delete"))
+		{
 			this.neighbours.remove(i);
+			return;
+		}
 		if(Action.equals("Update"))
 			this.neighbours.remove(i);
 		if(peer.lx!=peer.ux && peer.ly!=peer.uy)
