@@ -105,7 +105,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		
 		for(int i=0;i<this.neighbours.size();i++)
 		{
-			Registry peerRegistry = LocateRegistry.getRegistry(this.neighbours.get(i).IPAddress, 5000);
+			Registry peerRegistry = LocateRegistry.getRegistry(this.neighbours.get(i).IPAddress, 6000);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 			if(isNeighbor(newPeer,this.neighbours.get(i)))
 			{
@@ -195,14 +195,14 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			HashMap<String,String> newPeerKeywords=swapHashTables(newPeer);
 			
 			System.out.println(" "+newPeer.IPAddress);
-			Registry peerRegistry = LocateRegistry.getRegistry(newPeer.IPAddress, 5000);
+			Registry peerRegistry = LocateRegistry.getRegistry(newPeer.IPAddress, 6000);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 			peerRemoteObject.remoteFinalInsertUpdate(newPeer,newPeerKeywords,newPeerNeighbor);
 			
 		}else{
 			//redirecting
 			String temp_IPAddress=this.redirect(xCoordinate, yCoordinate);
-			Registry peerRegistry = LocateRegistry.getRegistry(temp_IPAddress, 5000);
+			Registry peerRegistry = LocateRegistry.getRegistry(temp_IPAddress, 6000);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 			peerRemoteObject.insert(xCoordinate,yCoordinate,IPAddress);
 				
