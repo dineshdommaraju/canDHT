@@ -309,7 +309,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				{
 					//this.neighbours.add(this.neighbours updneighbours.get(i));
 					this.neighbours.remove(j);
-					this.neighbours.add(j,this.neighbours updneighbours.get(i));
+					this.neighbours.add(j,updneighbours.get(i));
 					flag=true;
 					break;
 				}
