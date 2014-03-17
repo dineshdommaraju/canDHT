@@ -463,12 +463,37 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 		peerRemoteObject.remoteFinalInsertUpdate(node,newPeerKeywords,newPeerNeighbor,"Leave");
 	}
+	public void remoteRemoveFromNeighbors(String IPAddress) throws RemoteException, NotBoundException;
+	{
+		for(int i=0;i < this.neighbours.size();i++)
+		{
+			if(this.neighbours.get(i).equals(IPAddress))
+			{
+				this.neighbours.remove(i);
+				i--;
+			}
+		}
+	}
+	
+	void removeFromNeighbors()
+	{
+		for(int i=0;i < this.neighbours.size();i++)
+		{
+			System.out.println("removeFromNeighbors");
+			Registry peerRegistry = LocateRegistry.getRegistry(this.neighbours.get(i).IPAddress, 6000);
+			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
+			peerRemoteObject.remoteRemoveFromNeighbors(this.peerNode.IPAddress)
+			
+		}
+	}
+	
 	void leaveNode() throws RemoteException, NotBoundException
 	{
 		for(int i=0;i < this.neighbours.size();i++)
 		{
 			canExtend(this.peerNode,this.neighbours.get(i));
 		}
+		removeFromNeighbors();
 	}
 	void Join(String IPAddress, int port, float x, float y) throws RemoteException, NotBoundException, UnknownHostException
 	{
