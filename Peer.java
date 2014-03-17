@@ -394,7 +394,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			}else if(node.uy==leaveNode.uy)
 			{
 				node=updateNode(node,node.lx,node.ly,leaveNode.ux,node.uy);
-				updateNode(leaveNode,leaveNode.lx,node.ly,leaveNode.ux,leaveNode.uy);
+				updateNode(leaveNode,leaveNode.lx,leaveNode.ly,leaveNode.ux,node.ly);
 			}
 			ArrayList<Node> newPeerNeighbor=updatePeersNeighbors(node,"LeaveUpdate");
 			HashMap<String,String> newPeerKeywords=swapHashTables(node);
@@ -411,7 +411,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			}else if(node.uy==leaveNode.uy)
 			{
 				node=updateNode(node,leaveNode.lx,node.ly,node.ux,node.uy);
-				updateNode(leaveNode,leaveNode.lx,node.ly,leaveNode.ux,leaveNode.uy);
+				updateNode(leaveNode,leaveNode.lx,leaveNode.ly,leaveNode.ux,node.uy);
 			}
 			
 			ArrayList<Node> newPeerNeighbor=updatePeersNeighbors(node,"LeaveUpdate");
@@ -445,7 +445,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			}else if(node.ux==leaveNode.ux)
 			{
 				node=updateNode(node,node.lx,leaveNode.ly,node.ux,node.uy);
-				updateNode(leaveNode,leaveNode.lx,leaveNode.ly,node.lx,leaveNode.uy);
+				updateNode(leaveNode,leaveNode.lx,leaveNode.ly,leaveNode.lx,node.ly);
 			}
 			ArrayList<Node> newPeerNeighbor=updatePeersNeighbors(node,"LeaveUpdate");
 			HashMap<String,String> newPeerKeywords=swapHashTables(node);
