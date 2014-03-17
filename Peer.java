@@ -34,6 +34,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	private static final long serialVersionUID = 1L;
 	ArrayList<Node> neighbours = new ArrayList<Node>();
 	HashMap<String, String> keywords = new HashMap<String, String>();
+	String BootStrapIPAddress;
 	
 	protected Peer() throws RemoteException {
 		super();
@@ -487,6 +488,14 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 	}
 	
+	void updateBootStrapServer()  throws RemoteException, NotBoundException
+	{
+		Registry registry = LocateRegistry.getRegistry(this.BootStrapIPAddress, 6000);
+		remoteInterface otherObj = (remoteInterface) registry.lookup("server");
+		otherObj.remoteUpdateBootStrapServer(this.peerNode.IPAddress);
+	}
+	
+	
 	void leaveNode() throws RemoteException, NotBoundException
 	{
 		for(int i=0;i < this.neighbours.size();i++)
@@ -494,6 +503,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			canExtend(this.peerNode,this.neighbours.get(i));
 		}
 		removeFromNeighbors();
+		updateBootStrapServer();
 	}
 	void Join(String IPAddress, int port, float x, float y) throws RemoteException, NotBoundException, UnknownHostException
 	{
@@ -534,20 +544,29 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	void userPrompt() throws RemoteException, NotBoundException, UnknownHostException
 	{
+		
 		while(true)
 		{
 			Scanner sc = new Scanner(System.in);
 			String input = sc.next();
 			if (input.equals("join")) {
-				float x=sc.nextFloat();
-				float y=sc.nextFloat();
-				Join("129.21.135.30", 6000,x,y);
+				
+				System.out.println("Enter Bootstrap Server IP Address");
+				this.BootStrapIPAddress=sc.next();
+				System.out.println("Enter X and Y Coordinate");
+				float x=sc.nextFloat();float y=sc.nextFloat();
+				Join(this.BootStrapIPAddress, 6000,x,y);
+				
 			}else if(input.equals("Insert"))
 			{
+				System.out.println("Enter the keyword");
 				insertKeyword(sc.next());
+				
 			}else if(input.equals("Search"))
 			{
+				System.out.println("Enter the keyword");
 				searchKeyword(sc.next());
+				
 			}else if(input.equals("Leave")){
 				leaveNode();
 			}else if(input.equals("view"))
@@ -567,6 +586,11 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	public String getBootStrapNode(String ipAddress) throws RemoteException,
 			NotBoundException {
 		return null;
+	}
+	
+	public void remoteUpdateBootStrapServer(String ipAddress)throws RemoteException,NotBoundException
+	{
+		return;
 	}
 
 }
