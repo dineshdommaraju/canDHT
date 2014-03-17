@@ -37,7 +37,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	protected Peer() throws RemoteException {
 		super();
-		Registry registry = LocateRegistry.createRegistry(5000);
+		Registry registry = LocateRegistry.createRegistry(6000);
 		registry.rebind("peer", this);
 	}
 	
@@ -216,7 +216,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		int minIndex = 0;
 		for (int i = 0; i < this.neighbours.size(); i++) {
 			distance = (float) (Math.pow((xCoordinate - ((this.neighbours.get(i).lx + this.neighbours.get(i).ux) / 2)), 2))
-					  + (float) (Math.pow((yCoordinate-((this.neighbours.get(i).ly + this.neighbours.get(i).uy) / 2)), 2));
+					  + (float) (Math.pow((yCoordinate-((this.neighbours.get(i).ly + this.neighbours.get(i).      uy) / 2)), 2));
 			if(distance < distanceMin)
 			{
 				distanceMin = distance;
@@ -254,7 +254,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			System.out.println(" IP :"+this.peerNode.IPAddress);
 			String temp_IPAddress=this.redirect(xCoordinate, yCoordinate);
 			System.out.println("Redirect IPAddress"+temp_IPAddress);
-			Registry peerRegistry = LocateRegistry.getRegistry(temp_IPAddress, 5000);
+			Registry peerRegistry = LocateRegistry.getRegistry(temp_IPAddress, 6000);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 			peerRemoteObject.search(keyword, xCoordinate, yCoordinate, Action);
 		}
@@ -384,7 +384,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			if (input.equals("join")) {
 				float x=sc.nextFloat();
 				float y=sc.nextFloat();
-				Join("129.21.135.188", 5000,x,y);
+				Join("129.21.135.188", 6000,x,y);
 			}else if(input.equals("Insert"))
 			{
 				insertKeyword(sc.next());
