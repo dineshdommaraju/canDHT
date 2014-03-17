@@ -260,7 +260,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			System.out.println("Redirect IPAddress"+temp_IPAddress);
 			Registry peerRegistry = LocateRegistry.getRegistry(temp_IPAddress, 6000);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
-			peerRemoteObject.search(keyword, xCoordinate, yCoordinate, Action,path);
+			path=peerRemoteObject.search(keyword, xCoordinate, yCoordinate, Action,path);
 		}
 		return path;
 	}
