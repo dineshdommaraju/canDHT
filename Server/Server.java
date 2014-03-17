@@ -12,7 +12,7 @@ public class Server extends UnicastRemoteObject implements remoteInterface{
 	
 	protected Server() throws RemoteException {
 		super();
-		Registry registry = LocateRegistry.createRegistry(5000);
+		Registry registry = LocateRegistry.createRegistry(6000);
 		registry.rebind("server", this);
 	}
 	
