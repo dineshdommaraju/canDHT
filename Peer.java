@@ -92,6 +92,10 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		for(i=0; i<this.neighbours.size();i++)
 		{
 			System.out.println(this.neighbours.get(i).IPAddress);
+		}
+		for(i=0; i<this.neighbours.size();i++)
+		{
+			System.out.println(this.neighbours.get(i).IPAddress);
 			if(this.neighbours.get(i).IPAddress.equals(peer.IPAddress))
 				break;
 		}
@@ -106,7 +110,10 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				return;
 			}
 			else
+			{
+				System.out.println("removed");
 				this.neighbours.remove(i);
+			}
 		}
 		if(Action.equals("Delete"))
 		{
@@ -116,7 +123,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 		if(Action.equals("Update"))
 		{
-			System.out.println("Update");
+			System.out.println("Updat");
 			this.neighbours.remove(i);
 		}
 		if(peer.lx!=peer.ux && peer.ly!=peer.uy)
