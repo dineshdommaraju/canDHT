@@ -171,7 +171,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			{
 				System.out.println("Delete");
 				peerRemoteObject.remoteUpdateNeighbor(this.peerNode,"Delete");
-			}*/
+			}
 		}
 		for(int i=0;i<this.neighbours.size();i++)
 		{
