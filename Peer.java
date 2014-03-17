@@ -127,7 +127,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				}else{
 					if(!newPeer.IPAddress.equals(this.neighbours.get(i).IPAddress))
 					{
-						peerRemoteObject.remoteUpdateNeighbor(this.peerNode,"leaveUpdate");
+						peerRemoteObject.remoteUpdateNeighbor(newPeer,"leaveUpdate");
 						newPeerNeighbor.add(this.neighbours.get(i));
 						
 					}
@@ -275,7 +275,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			int j;
 			for(j=0;j < this.neighbours.size();j++)
 			{
-				if(this.neighbours.get(j).equals(updneighbours.get(i)))
+				if(this.neighbours.get(j).IPAddress.equals(updneighbours.get(i).IPAddress))
 				{
 					this.neighbours.add(j, updneighbours.get(i));
 					flag=true;
@@ -384,6 +384,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			leaveFinalUpdate(node,newPeerNeighbor,newPeerKeywords);
 		}else if(leaveNode.ly > node.ly && node.lx >= leaveNode.lx && node.ux <= leaveNode.ux)
 		{
+			System.out.println(" case 3");
 			if(node.lx==leaveNode.lx)
 			{
 				node=updateNode(node,node.lx,node.ly,node.ux,leaveNode.uy);
