@@ -352,6 +352,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	{
 		if (leaveNode.lx > node.lx && node.ly >= leaveNode.ly && node.uy <= leaveNode.uy)
 		{
+			System.out.println(" case 1");
 			if(node.ly==leaveNode.ly)
 			{
 				//Update Node
@@ -369,6 +370,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			
 		}else if(leaveNode.lx < node.lx &&  node.ly >= leaveNode.ly && node.uy <= leaveNode.uy)
 		{
+			System.out.println(" case 2");
 			if(node.ly==leaveNode.ly)
 			{
 				node=updateNode(node,leaveNode.lx,node.ly,node.ux,node.uy);
@@ -400,7 +402,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			leaveFinalUpdate(node,newPeerNeighbor,newPeerKeywords);
 			
 		}else if(leaveNode.ly < node.ly && node.lx >= leaveNode.lx && node.ux <= leaveNode.ux){
-			
+			System.out.println(" case 4");
 			if(node.lx==leaveNode.lx)
 			{
 				node=updateNode(node,node.lx,leaveNode.ly,node.ux,node.uy);
