@@ -265,8 +265,9 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	void insertKeyword(String keyword) throws RemoteException, NotBoundException
 	{	
-		ArrayList<String> path=search(keyword,hashX(keyword),hashY(keyword),"Insert",path);
-		System.out.println(" Path Traversed :"+path);
+		ArrayList<String> path=new ArrayList<String>();
+		path=search(keyword,hashX(keyword),hashY(keyword),"Insert",path);
+		System.out.println(" Path Traversed :");
 	}
 	
 	void searchKeyword(String keyword) throws RemoteException, NotBoundException
