@@ -249,8 +249,10 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			{
 				this.keywords.put(keyword, " ");
 			}else{
-				System.out.println("Keyword Found at" + this.peerNode.IPAddress);
-				
+				if(this.keywords.containsKey(keyword))
+					System.out.println("Keyword Found at" + this.peerNode.IPAddress);
+				else
+					return null;
 			}
 		}else{
 			System.out.println(" IP :"+this.peerNode.IPAddress);
@@ -267,14 +269,14 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	{	
 		ArrayList<String> path=new ArrayList<String>();
 		path=search(keyword,hashX(keyword),hashY(keyword),"Insert",path);
-		System.out.println(" Path Traversed :");
+		System.out.println(" Path Traversed :"+path);
 	}
 	
 	void searchKeyword(String keyword) throws RemoteException, NotBoundException
 	{
 		ArrayList<String> path=new ArrayList<String>();
 		path=search(keyword,hashX(keyword),hashY(keyword),"Search",path);
-		if(path.size()!=0)
+		if(path!=null)
 			System.out.println("Keyword Found \n"+"path Traversed : "+path);
 		else
 			System.out.println("Keyword not found!");
