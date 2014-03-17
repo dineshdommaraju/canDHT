@@ -81,6 +81,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	public void remoteUpdateNeighbor(Node peer,String Action) throws RemoteException, NotBoundException
 	{
 		System.out.println("remoteUpdateNeighbor 1 ");
+
 		if(Action.equals("Add"))
 		{
 			this.neighbours.add(peer);
@@ -92,12 +93,22 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			if(this.neighbours.get(i).IPAddress.equals(peer.IPAddress))
 				break;
 		}
+		if(Action.equals("LeaveUpdate"))
+		{
+			if(i==this.neighbours.size())
+			{
+				this.neighbours.add(peer);
+				return;
+			}
+			else
+				this.neighbours.remove(i);
+		}
 		if(Action.equals("Update"))
 			this.neighbours.remove(i);
 		this.neighbours.add(peer);
 	}
 	
-	ArrayList<Node> updatePeersNeighbors(Node newPeer) throws RemoteException, NotBoundException
+	ArrayList<Node> updatePeersNeighbors(Node newPeer,String Action) throws RemoteException, NotBoundException
 	{
 		System.out.println("updatePeersNeighbors 1");
 		ArrayList<Node> newPeerNeighbor=new ArrayList<Node>();
@@ -108,10 +119,20 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 			if(isNeighbor(newPeer,this.neighbours.get(i)))
 			{
-				System.out.println("Add");
-				peerRemoteObject.remoteUpdateNeighbor(newPeer,"Add");
-				newPeerNeighbor.add(this.neighbours.get(i));	
-			}
+				if(Action.equals("Join"))
+				{
+					System.out.println("Add");
+					peerRemoteObject.remoteUpdateNeighbor(newPeer,"Add");
+					newPeerNeighbor.add(this.neighbours.get(i));
+				}else{
+					if(!newPeer.IPAddress.equals(this.neighbours.get(i).IPAddress))
+					{
+						peerRemoteObject.remoteUpdateNeighbor(this.peerNode,"leaveUpdate");
+						newPeerNeighbor.add(this.neighbours.get(i));
+						
+					}
+				}
+			}	
 			
 			if(isNeighbor(this.peerNode, this.neighbours.get(i)))
 			{
@@ -186,7 +207,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				
 			}
 			//Updating the Neighbors
-			ArrayList<Node> newPeerNeighbor=updatePeersNeighbors(newPeer);
+			ArrayList<Node> newPeerNeighbor=updatePeersNeighbors(newPeer,"Join");
 			this.neighbours.add(newPeer);
 			System.out.println("Added new peer");
 			newPeerNeighbor.add(this.peerNode);
@@ -196,7 +217,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			System.out.println(" "+newPeer.IPAddress);
 			Registry peerRegistry = LocateRegistry.getRegistry(newPeer.IPAddress, 6000);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
-			peerRemoteObject.remoteFinalInsertUpdate(newPeer,newPeerKeywords,newPeerNeighbor);
+			peerRemoteObject.remoteFinalInsertUpdate(newPeer,newPeerKeywords,newPeerNeighbor,"Join");
 			
 		}else{
 			//redirecting
@@ -229,13 +250,49 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		return this.neighbours.get(minIndex).IPAddress;
 		
 	}
-	public void remoteFinalInsertUpdate(Node newPeer,HashMap<String,String> keywords,ArrayList<Node> neighbours) 
+	public void remoteFinalInsertUpdate(Node newPeer,HashMap<String,String> keywords,ArrayList<Node> neighbours,String Action) 
 														throws RemoteException, NotBoundException
 	{
-		System.out.println("remote Final Insert Update");
-		this.peerNode=newPeer;
-		this.keywords=keywords;
-		this.neighbours=neighbours;
+		System.out.println("remote Final Insert Update"); 
+		if(Action.equals("Join"))
+		{
+			this.peerNode=newPeer;
+			this.keywords=keywords;
+			this.neighbours=neighbours;
+		}else if(Action.equals("leave"))
+		{
+			this.peerNode=newPeer;
+			addNewKeywords(keywords);
+			leave_UpdateNeighbors(neighbours);
+		}
+	}
+	void leave_UpdateNeighbors(ArrayList<Node> updneighbours) throws RemoteException, NotBoundException
+	{
+		boolean flag;
+		for(int i=0; i < updneighbours.size();i++)
+		{
+			flag=false;
+			int j;
+			for(j=0;j < this.neighbours.size();j++)
+			{
+				if(this.neighbours.get(j).equals(updneighbours.get(i)))
+				{
+					this.neighbours.add(j, updneighbours.get(i));
+					flag=true;
+					break;
+				}
+			}
+			if(!flag)
+				this.neighbours.add(updneighbours.get(j));
+		}
+	}
+	void addNewKeywords(HashMap<String,String> keywords)
+	{
+		Iterator it = keywords.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();
+			this.keywords.put(pairs.getKey(), pairs.getValue());
+		}
 	}
 	public ArrayList<String> search(String keyword, float xCoordinate, float yCoordinate,String Action,ArrayList<String> path) throws RemoteException, NotBoundException
 	{
@@ -296,14 +353,18 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		{
 			if(node.ly==leaveNode.ly)
 			{
+				//Update Node
 				updateNode(node,node.lx,node.ly,leaveNode.ux,node.uy);
+				//Update leave Node
 				updateNode(leaveNode,leaveNode.lx,node.uy,leaveNode.ux,leaveNode.uy);
 			}else if(node.uy==leaveNode.uy)
 			{
 				updateNode(node,node.lx,node.ly,leaveNode.ux,node.uy);
 				updateNode(leaveNode,leaveNode.lx,node.ly,leaveNode.ux,leaveNode.uy);
 			}
-			
+			ArrayList<Node> newPeerNeighbor=updatePeersNeighbors(node,"LeaveUpdate");
+			HashMap<String,String> newPeerKeywords=swapHashTables(node);
+			leaveFinalUpdate(node,newPeerNeighbor,newPeerKeywords);
 			
 		}else if(leaveNode.lx < node.lx &&  node.ly >= leaveNode.ly && node.uy <= leaveNode.uy)
 		{
@@ -317,7 +378,9 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				updateNode(node,leaveNode.lx,node.ly,node.ux,node.uy);
 				updateNode(leaveNode,leaveNode.lx,node.ly,leaveNode.ux,leaveNode.uy);
 			}
-			
+			ArrayList<Node> newPeerNeighbor=updatePeersNeighbors(node,"LeaveUpdate");
+			HashMap<String,String> newPeerKeywords=swapHashTables(node);
+			leaveFinalUpdate(node,newPeerNeighbor,newPeerKeywords);
 		}else if(leaveNode.ly > node.ly && node.lx >= leaveNode.lx && node.ux <= leaveNode.ux)
 		{
 			if(node.lx==leaveNode.lx)
@@ -330,7 +393,9 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				updateNode(node,node.lx,node.ly,node.ux,leaveNode.uy);
 				updateNode(leaveNode,leaveNode.lx,leaveNode.ly,node.lx,leaveNode.uy);
 			}
-			
+			ArrayList<Node> newPeerNeighbor=updatePeersNeighbors(node,"LeaveUpdate");
+			HashMap<String,String> newPeerKeywords=swapHashTables(node);
+			leaveFinalUpdate(node,newPeerNeighbor,newPeerKeywords);
 			
 		}else if(leaveNode.ly < node.ly && node.lx >= leaveNode.lx && node.ux <= leaveNode.ux){
 			
@@ -344,8 +409,18 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				updateNode(node,node.lx,leaveNode.ly,node.ux,node.uy);
 				updateNode(leaveNode,leaveNode.lx,leaveNode.ly,node.lx,leaveNode.uy);
 			}
-			
+			ArrayList<Node> newPeerNeighbor=updatePeersNeighbors(node,"LeaveUpdate");
+			HashMap<String,String> newPeerKeywords=swapHashTables(node);
+			leaveFinalUpdate(node,newPeerNeighbor,newPeerKeywords);
 		}
+		
+		
+	}
+	void leaveFinalUpdate(Node node,ArrayList<Node> newPeerNeighbor,HashMap<String,String> newPeerKeywords) throws RemoteException, NotBoundException
+	{
+		Registry peerRegistry = LocateRegistry.getRegistry(node.IPAddress, 6000);
+		remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
+		peerRemoteObject.remoteFinalInsertUpdate(node,newPeerKeywords,newPeerNeighbor,"Leave");
 	}
 	void leaveNode() throws RemoteException, NotBoundException
 	{
