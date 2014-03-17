@@ -463,11 +463,11 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 		peerRemoteObject.remoteFinalInsertUpdate(node,newPeerKeywords,newPeerNeighbor,"Leave");
 	}
-	public void remoteRemoveFromNeighbors(String IPAddress) throws RemoteException, NotBoundException;
+	public void remoteRemoveFromNeighbors(String IPAddress) throws RemoteException, NotBoundException
 	{
 		for(int i=0;i < this.neighbours.size();i++)
 		{
-			if(this.neighbours.get(i).equals(IPAddress))
+			if(this.neighbours.get(i).IPAddress.equals(IPAddress))
 			{
 				this.neighbours.remove(i);
 				i--;
@@ -475,7 +475,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 	}
 	
-	void removeFromNeighbors()
+	void removeFromNeighbors() throws RemoteException, NotBoundException
 	{
 		for(int i=0;i < this.neighbours.size();i++)
 		{
