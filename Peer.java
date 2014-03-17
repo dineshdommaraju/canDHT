@@ -17,7 +17,7 @@ class Node implements Serializable
 	private static final long serialVersionUID = 1L;
 	float lx,ly,ux,uy;
 	String IPAddress;
-	ArrayList<Node> neighbours = new ArrayList<Node>();
+	//ArrayList<Node> neighbours = new ArrayList<Node>();
 	HashMap<String, String> HashTable = new HashMap<String, String>();
 	
 	Node(float lx, float ly, float ux, float uy, String IPAddress)
@@ -211,18 +211,23 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	String redirect(float xCoordinate, float yCoordinate) throws RemoteException, NotBoundException
 	{
+		System.out.println(" IP 2 : "+this.peerNode.IPAddress);
 		float distance,distanceMin = 100;
 		int minIndex = 0;
-		for (int i = 0; i < this.peerNode.neighbours.size(); i++) {
-			distance = (float) (Math.pow((xCoordinate - ((this.peerNode.lx + this.peerNode.ux) / 2)), 2))
-					  + (float) (Math.pow((yCoordinate-((this.peerNode.ly + this.peerNode.uy) / 2)), 2));
+		for (int i = 0; i < this.neighbours.size(); i++) {
+			distance = (float) (Math.pow((xCoordinate - ((this.neighbours.get(i).lx + this.neighbours.get(i).ux) / 2)), 2))
+					  + (float) (Math.pow((yCoordinate-((this.neighbours.get(i).ly + this.neighbours.get(i).uy) / 2)), 2));
 			if(distance < distanceMin)
 			{
 				distanceMin = distance;
 				minIndex = i;
 			}		
 		}
-		return this.peerNode.neighbours.get(minIndex).IPAddress;
+		System.out.println("Minimum Index1 : " +minIndex);
+		System.out.println("redirect IP : ");
+		
+		System.out.println(this.neighbours.get(minIndex).IPAddress);
+		return this.neighbours.get(minIndex).IPAddress;
 		
 	}
 	public void remoteFinalInsertUpdate(Node newPeer,HashMap<String,String> keywords,ArrayList<Node> neighbours) 
@@ -235,6 +240,8 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	}
 	public void search(String keyword, float xCoordinate, float yCoordinate,String Action) throws RemoteException, NotBoundException
 	{
+		System.out.println("xCoordinate : "+xCoordinate);
+		System.out.println("yCoordinate :"+yCoordinate);
 		if(sameZone(xCoordinate,yCoordinate,this.peerNode))
 		{
 			if(Action.equals("Insert"))
@@ -244,7 +251,9 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				System.out.println("Keyword Found at" + this.peerNode.IPAddress);
 			}
 		}else{
+			System.out.println(" IP :"+this.peerNode.IPAddress);
 			String temp_IPAddress=this.redirect(xCoordinate, yCoordinate);
+			System.out.println("Redirect IPAddress"+temp_IPAddress);
 			Registry peerRegistry = LocateRegistry.getRegistry(temp_IPAddress, 5000);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 			peerRemoteObject.search(keyword, xCoordinate, yCoordinate, Action);
