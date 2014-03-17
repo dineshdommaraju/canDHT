@@ -15,7 +15,7 @@ public class Server extends UnicastRemoteObject implements remoteInterface{
 		Registry registry = LocateRegistry.createRegistry(6000);
 		registry.rebind("server", this);
 	}
-	public void remoteUpdateBootStrapServer(String ipAddress) throws RemoteException,NotBoundException;
+	public void remoteUpdateBootStrapServer(String ipAddress) throws RemoteException,NotBoundException
 	{
 		for(int i=0;i < nodesList.size();i++)
 			if(nodesList.equals(ipAddress))
