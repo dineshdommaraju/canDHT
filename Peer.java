@@ -238,10 +238,11 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		this.keywords=keywords;
 		this.neighbours=neighbours;
 	}
-	public void search(String keyword, float xCoordinate, float yCoordinate,String Action) throws RemoteException, NotBoundException
+	public ArrayList<String> search(String keyword, float xCoordinate, float yCoordinate,String Action,ArrayList<String> path) throws RemoteException, NotBoundException
 	{
 		System.out.println("xCoordinate : "+xCoordinate);
 		System.out.println("yCoordinate :"+yCoordinate);
+		path.add(this.peerNode.IPAddress);
 		if(sameZone(xCoordinate,yCoordinate,this.peerNode))
 		{
 			if(Action.equals("Insert"))
@@ -249,6 +250,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				this.keywords.put(keyword, " ");
 			}else{
 				System.out.println("Keyword Found at" + this.peerNode.IPAddress);
+				
 			}
 		}else{
 			System.out.println(" IP :"+this.peerNode.IPAddress);
@@ -258,11 +260,13 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 			peerRemoteObject.search(keyword, xCoordinate, yCoordinate, Action);
 		}
+		return path;
 	}
 	
 	void insertKeyword(String keyword) throws RemoteException, NotBoundException
-	{
-		search(keyword,hashX(keyword),hashY(keyword),"Insert");
+	{	
+		ArrayList<String> path=search(keyword,hashX(keyword),hashY(keyword),"Insert",path);
+		System.out.println(" Path Traversed :"+path);
 	}
 	
 	void searchKeyword(String keyword) throws RemoteException, NotBoundException
