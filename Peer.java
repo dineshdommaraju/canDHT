@@ -258,7 +258,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			System.out.println("Redirect IPAddress"+temp_IPAddress);
 			Registry peerRegistry = LocateRegistry.getRegistry(temp_IPAddress, 6000);
 			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
-			peerRemoteObject.search(keyword, xCoordinate, yCoordinate, Action);
+			peerRemoteObject.search(keyword, xCoordinate, yCoordinate, Action,path);
 		}
 		return path;
 	}
@@ -272,7 +272,12 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	void searchKeyword(String keyword) throws RemoteException, NotBoundException
 	{
-		search(keyword,hashX(keyword),hashY(keyword),"Search");
+		ArrayList<String> path=new ArrayList<String>();
+		path=search(keyword,hashX(keyword),hashY(keyword),"Search",path);
+		if(path.size()!=0)
+			System.out.println("Keyword Found \n"+"path Traversed : "+path);
+		else
+			System.out.println("Keyword not found!");
 	}
 	
 	void updateNode(Node updNode, float lx, float ly, float ux, float uy)
