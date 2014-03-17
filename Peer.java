@@ -160,8 +160,8 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 					}
 				}
 			}
-			peerRemoteObject.remoteUpdateNeighbor(this.peerNode,"Delete");
-			/*
+			//peerRemoteObject.remoteUpdateNeighbor(this.peerNode,"Delete");
+			
 			if(isNeighbor(this.peerNode, this.neighbours.get(i)))
 			{
 				System.out.println("Update");
@@ -172,6 +172,12 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				System.out.println("Delete");
 				peerRemoteObject.remoteUpdateNeighbor(this.peerNode,"Delete");
 			}*/
+		}
+		for(int i=0;i<this.neighbours.size();i++)
+		{
+			Registry peerRegistry = LocateRegistry.getRegistry(this.neighbours.get(i).IPAddress, 6000);
+			remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
+			peerRemoteObject.remoteUpdateNeighbor(this.peerNode,"Delete");
 		}
 		return newPeerNeighbor;	
 	}
