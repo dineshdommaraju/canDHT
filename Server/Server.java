@@ -26,7 +26,6 @@ public class Server extends UnicastRemoteObject implements remoteInterface{
 	}
 	public String getBootStrapNode(String ipAddress) throws RemoteException, NotBoundException
 	{
-		System.out.println("getBootStrapNode 1");
 		if(nodesList.isEmpty())
 		{
 			nodesList.add(ipAddress);
