@@ -105,7 +105,8 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 		if(Action.equals("Update"))
 			this.neighbours.remove(i);
-		this.neighbours.add(peer);
+		if(peer.lx!=peer.ux && peer.ly!=peer.uy)
+			this.neighbours.add(peer);
 	}
 	
 	ArrayList<Node> updatePeersNeighbors(Node newPeer,String Action) throws RemoteException, NotBoundException
