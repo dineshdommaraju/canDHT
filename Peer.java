@@ -516,7 +516,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			if (input.equals("join")) {
 				float x=sc.nextFloat();
 				float y=sc.nextFloat();
-				Join("129.21.135.188", 6000,x,y);
+				Join("129.21.135.30", 6000,x,y);
 			}else if(input.equals("Insert"))
 			{
 				insertKeyword(sc.next());
