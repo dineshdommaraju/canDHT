@@ -15,11 +15,9 @@ import java.util.Scanner;
 class Node implements Serializable
 {
 	private static final long serialVersionUID = 1L;
+	//Coordinates/boundaries of each node
 	float lx,ly,ux,uy;
-	String IPAddress;
-	//ArrayList<Node> neighbours = new ArrayList<Node>();
-	HashMap<String, String> HashTable = new HashMap<String, String>();
-	
+	String IPAddress;	
 	Node(float lx, float ly, float ux, float uy, String IPAddress)
 	{
 		this.lx=lx;this.ly=ly;
@@ -38,10 +36,12 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	
 	protected Peer() throws RemoteException {
 		super();
+		//Bind the object in the rmi registry
 		Registry registry = LocateRegistry.createRegistry(6000);
 		registry.rebind("peer", this);
 	}
 	
+	//Check if the Coordinates lies in the Zone of the peer
 	boolean sameZone(float xCoordinate, float yCoordinate, Node peer)
 	{
 		if (xCoordinate >= peer.lx && yCoordinate >= peer.ly
@@ -52,6 +52,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			return false;
 	}
 	
+	//Check whether to split the Zone horizontally
 	
 	boolean divideHorizantally()
 	{
@@ -62,7 +63,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			return true;
 		}
 	}
-	
+	//Check if the two nodes are neighbor are not
 	boolean isNeighbor(Node newPeer, Node neighbor)
 	{
 		if(newPeer.lx==newPeer.ux || newPeer.ly==newPeer.uy)
@@ -75,11 +76,12 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			return false;
 		return true;
 	}
-	
+	//Remote method to update the neighbors of the remote object
 	public void remoteUpdateNeighbor(Node peer,String Action) throws RemoteException, NotBoundException
 	{
 		if(Action.equals("Add"))
 		{
+			//If a new node joins
 			this.neighbours.add(peer);
 			return;
 		}
@@ -91,7 +93,8 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 		if(Action.equals("LeaveUpdate"))
 		{
-			if(i==this.neighbours.size())
+			//Updating the neighbors when the node leaves
+			if(i==this.neighbours.size()) 
 			{
 				this.neighbours.add(peer);
 				return;
@@ -101,6 +104,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 		if(Action.equals("Delete"))
 		{
+			//deleting the node from the neighbor list
 			this.neighbours.remove(i);
 			return;
 		}
@@ -110,6 +114,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			this.neighbours.add(peer);
 	}
 	
+	//Updating the list of neighbors for the node given in the parameter
 	ArrayList<Node> updatePeersNeighbors(Node newPeer,String Action) throws RemoteException, NotBoundException
 	{
 		ArrayList<Node> newPeerNeighbor=new ArrayList<Node>();
@@ -142,21 +147,22 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 		return newPeerNeighbor;	
 	}
-	
+	//Hash the keyword
 	float hashX(String keyword) {
 		int sum=0;
 		for(int i=0; i < keyword.length();i=i+2)
 			sum += keyword.charAt(i);
 		return (sum%10);
 	}
-	
+	//Hash the keyword
 	float hashY(String keyword) {
 		int sum=0;
 		for(int i=1; i < keyword.length();i=i+2)
 			sum += keyword.charAt(i);
 		return (sum%10);
 	}
-	
+	//Swapping the hashtables  from another node when the new node joins the
+	//CAN network or when the node leaves the netowrk
 	HashMap<String,String> swapHashTables(Node newPeer)
 	{
 		HashMap<String,String> newPeerKeywords=new HashMap<String,String>();
@@ -171,7 +177,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 		return newPeerKeywords;
 	}
-	
+	//Method to handle joining of a new node into the system for the X and Y Coordinates given in the parameters
 	public void insert(float xCoordinate, float yCoordinate, String IPAddress) throws RemoteException, NotBoundException
 	{
 		Node newPeer;
@@ -219,7 +225,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				
 		}
 	}
-	
+	//Method to find the best next hop when  the coordinates are not present in the given Zone.
 	String redirect(float xCoordinate, float yCoordinate) throws RemoteException, NotBoundException
 	{
 		float distance,distanceMin = 100;
@@ -252,6 +258,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			leave_UpdateNeighbors(neighbours);
 		}
 	}
+	//Updating the neighbors when the node leaves
 	void leave_UpdateNeighbors(ArrayList<Node> updneighbours) throws RemoteException, NotBoundException
 	{
 		boolean flag;
@@ -273,6 +280,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 				this.neighbours.add(updneighbours.get(j));
 		}
 	}
+	//Adding new keywords to the hashmap
 	void addNewKeywords(HashMap<String,String> keywords)
 	{
 		Iterator it = keywords.entrySet().iterator();
@@ -281,6 +289,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			this.keywords.put(pairs.getKey(), pairs.getValue());
 		}
 	}
+	//Method to handle the search functionality
 	public ArrayList<String> search(String keyword, float xCoordinate, float yCoordinate,String Action,ArrayList<String> path) throws RemoteException, NotBoundException
 	{
 		path.add(this.peerNode.IPAddress);
@@ -303,7 +312,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 		return path;
 	}
-	
+	//Method to handle the Insert Keyword functionality
 	void insertKeyword(String keyword) throws RemoteException, NotBoundException
 	{	
 		ArrayList<String> path=new ArrayList<String>();
@@ -311,6 +320,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		System.out.println(" Path Traversed :"+path);
 	}
 	
+	//Method to handle the search functionality
 	void searchKeyword(String keyword) throws RemoteException, NotBoundException
 	{
 		ArrayList<String> path=new ArrayList<String>();
@@ -320,13 +330,14 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		else
 			System.out.println("Keyword not found!");
 	}
-	
+	//Updating the boundaries of the node
 	Node updateNode(Node updNode, float lx, float ly, float ux, float uy)
 	{
 		updNode.lx=lx;updNode.ly=ly;
 		updNode.ux=ux;updNode.uy=uy;
 		return updNode;
 	}
+	//Extending the neighboring nodes when the Node leaves the network
 	void canExtend(Node leaveNode, Node node ) throws RemoteException, NotBoundException
 	{
 		if (leaveNode.lx > node.lx && node.ly >= leaveNode.ly && node.uy <= leaveNode.uy)
@@ -402,6 +413,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		remoteInterface peerRemoteObject = (remoteInterface) peerRegistry.lookup("peer");
 		peerRemoteObject.remoteFinalInsertUpdate(node,newPeerKeywords,newPeerNeighbor,"Leave");
 	}
+	//Remote method to remove the leave node from the neighbors
 	public void remoteRemoveFromNeighbors(String IPAddress) throws RemoteException, NotBoundException
 	{
 		for(int i=0;i < this.neighbours.size();i++)
@@ -413,7 +425,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			}
 		}
 	}
-	
+	//removing the leave node from the neighbors
 	void removeFromNeighbors() throws RemoteException, NotBoundException
 	{
 		for(int i=0;i < this.neighbours.size();i++)
@@ -424,7 +436,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			
 		}
 	}
-	
+	//Updating the Bootstrap Server when the node leaves the network
 	void updateBootStrapServer()  throws RemoteException, NotBoundException
 	{
 		Registry registry = LocateRegistry.getRegistry(this.BootStrapIPAddress, 6000);
@@ -432,7 +444,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		otherObj.remoteUpdateBootStrapServer(this.peerNode.IPAddress);
 	}
 	
-	
+	//Method to handle when the node leaves the network
 	void leaveNode() throws RemoteException, NotBoundException
 	{
 		for(int i=0;i < this.neighbours.size();i++)
@@ -442,6 +454,8 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		removeFromNeighbors();
 		updateBootStrapServer();
 	}
+	
+	//Method to join a new node into the network
 	void Join(String IPAddress, int port, float x, float y) throws RemoteException, NotBoundException, UnknownHostException
 	{
 		Registry registry = LocateRegistry.getRegistry(IPAddress, port);
@@ -458,7 +472,7 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 			
 	}
-	
+	//Method to display the Information about the Node
 	void viewNode()
 	{
 		System.out.println("( "+this.peerNode.lx+" , "+this.peerNode.ly+" )");
@@ -475,9 +489,10 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 		}
 	}
 	
+	//Method to take the User commands
 	void userPrompt() throws RemoteException, NotBoundException, UnknownHostException
 	{
-		
+	
 		while(true)
 		{
 			Scanner sc = new Scanner(System.in);
@@ -505,6 +520,8 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 			}else if(input.equals("view"))
 			{
 				viewNode();
+			}else{
+				System.out.println("Wrong command");
 			}
 		}
 	}

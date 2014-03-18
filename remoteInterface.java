@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
+//remote interface for the peer
 public interface remoteInterface extends Remote{
 	public String getBootStrapNode(String ipAddress) throws RemoteException,NotBoundException;
 	public void insert(float xCoordinate, float yCoordinate, String IPAddress) throws RemoteException, NotBoundException;
