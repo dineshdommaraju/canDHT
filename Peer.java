@@ -447,12 +447,16 @@ public class Peer extends UnicastRemoteObject implements remoteInterface,Seriali
 	//Method to handle when the node leaves the network
 	void leaveNode() throws RemoteException, NotBoundException
 	{
-		for(int i=0;i < this.neighbours.size();i++)
+		while(this.peerNode.lx!=this.peerNode.ux || this.peerNode.ly!=this.peerNode.uy)
 		{
-			canExtend(this.peerNode,this.neighbours.get(i));
+			for(int i=0;i < this.neighbours.size();i++)
+			{
+				canExtend(this.peerNode,this.neighbours.get(i));
+			}
+			removeFromNeighbors();
+			updateBootStrapServer();
 		}
-		removeFromNeighbors();
-		updateBootStrapServer();
+		
 	}
 	
 	//Method to join a new node into the network
