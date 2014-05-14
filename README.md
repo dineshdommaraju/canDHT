@@ -3,7 +3,7 @@ canDHT
 ======
 
 Implementation of CAN Distributed Using HashTables using Java RMI.
-Following functionalities are included
+Following functionalities are included \n
 1. Join the network
 2. Search for the keyword
 3. Insert a new keyword
